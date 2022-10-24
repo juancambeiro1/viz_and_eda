@@ -1,0 +1,83 @@
+---
+title: "Untitled"
+author: "Juan Cambeiro"
+date: "2022-10-24"
+output: github_document
+---
+
+```{r setup}
+library(tidyverse)
+library(ggridges)
+```
+
+# Visualization with ggplot2 part 1
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USC00519397", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USC00519397 = "Waikiki_HA",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+Make a scatterplot: min vs. max temp. Need to define dataset, x and y axes. Also add geometries (e.g. geom_point() to get all points).
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) +
+  geom_point()
+```
+
+Let's fancy things up. Add color to have different colors for each  location.
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point() +
+  geom_smooth()
+```
+
+## Univariate plots..
+
+Density plots.
+
+For comparing distribution of max temps across each of the 3 weather stations.
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = .3)
+```
+
+
+
+Boxplots.
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmax, fill =name )) +
+  geom_boxplot()
+``` 
+
+Violin plot: tells same kind of stuff as boxplot tells you but also info about complete distribution. Comes in handy if you're comparing dozens of different things. If is only 3, do density plot or boxplot. Density plot is like smoothed-over histogram.
+
+ 
+# Visualization with ggplot2 part 2
+
+## Patchwork
+
+getting error for below, oh well.
+
+
+# EDA
+
+Exploratory data analysis. 
+`group_by` makes grouping explicit and adds a layer to a data based on existing variables. `summarize()` makes one number summaries
